@@ -1,8 +1,13 @@
 import { useCallback, useState } from "react";
-import { Dimensions, ScrollView, Text, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
 import Chart from "./components/chart";
+import Footer from "./components/footer";
+import Header from "./components/header";
+import OrderBook from "./components/order-book";
+import { useTrading } from "./logic/useTrading";
 
 export default function Trading() {
+  const { dataChart, dataOrder, matchTrade } = useTrading();
   const [enableScroll, setEnableScroll] = useState<boolean>(true);
 
   const handleData = useCallback((data: boolean) => {
@@ -10,22 +15,22 @@ export default function Trading() {
   }, []);
 
   return (
-    <ScrollView
-      contentContainerStyle={{ flexGrow: 1 }}
-      scrollEnabled={enableScroll}
-    >
-      <View style={{ height: Dimensions.get("window").height * 1 }}>
-        <Chart onScrollChart={(val) => handleData(val)} />
-      </View>
-      <View
-        style={{
-          height: 500,
-          width: 1000,
-          backgroundColor: "red",
-        }}
+    <View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        scrollEnabled={enableScroll}
       >
-        <Text>asd</Text>
-      </View>
-    </ScrollView>
+        <Header />
+        <View style={styles.containerChart}>
+          <Chart data={dataChart} onScrollChart={(val) => handleData(val)} />
+        </View>
+        <OrderBook data={dataOrder} matchesTrade={matchTrade} />
+      </ScrollView>
+      <Footer />
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  containerChart: { marginBottom: 30 }
+})

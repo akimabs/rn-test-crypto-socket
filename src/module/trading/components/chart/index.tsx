@@ -8,28 +8,29 @@ import {
   Text,
   NativeScrollEvent,
   NativeSyntheticEvent,
+  StyleSheet,
 } from "react-native";
 import { memo, useCallback, useEffect, useRef, useState } from "react";
 
-import { useTrading } from "../../logic/useTrading";
+import { THistoryDataTrading } from "../../logic/useTrading";
 
-function formatDate(timestamp: any) {
+function formatDate(timestamp: string) {
   const date = new Date(timestamp);
   const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are zero-based
+  const month = String(date.getMonth() + 1).padStart(2, "0");
   const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
+  return `${month}-${day}-${year}`;
 }
 
-function groupData(inputData: any) {
+function groupData(inputData: THistoryDataTrading) {
   const result = [];
   for (let i = 0; i < inputData.length; i += 4) {
     const group: any = {
       data: [],
     };
-    for (let j = i; j < i + 6 && j < inputData.length; j++) {
+    for (let j = i; j < i + 5 && j < inputData.length; j++) {
       group.data.push({
-        timestamp: formatDate(inputData[j].timestamp),
+        timestamp: formatDate(inputData[j]?.timestamp),
         open: Number(inputData[j].open),
         high: Number(inputData[j].high),
         low: Number(inputData[j].low),
@@ -44,20 +45,15 @@ function groupData(inputData: any) {
 
 const DataChart = ({ data, indexScroll }: any) => {
   return (
-    <View style={{ position: "absolute", bottom: 0, left: 0 }}>
+    <View style={styles.containerChartData}>
       <FlatList
         data={new Array(24)}
-        style={{
-          marginBottom: Dimensions.get("window").height * 0.06,
-          zIndex: -99,
-        }}
+        style={styles.containerListFirst}
         keyExtractor={(_, index) => index.toString()}
         ListFooterComponent={() => {
           return (
             <FlatList
-              style={{
-                zIndex: -99,
-              }}
+              style={styles.containerListFirst}
               horizontal
               scrollEnabled={false}
               bounces={false}
@@ -66,19 +62,15 @@ const DataChart = ({ data, indexScroll }: any) => {
               renderItem={({ item, index }) => {
                 return (
                   <View
-                    style={{
-                      width: Dimensions.get("window").width / 6,
-                      height: 200,
-                    }}
+                    style={styles.containerItemFirst}
                   >
                     <Text
                       style={[
                         index >= 1 && { marginLeft: -20 },
-                        index >= 5 && { marginLeft: -40 },
                         { fontSize: 10 },
                       ]}
                     >
-                      {index <= 5 &&
+                      {index <= 4 &&
                         item.data[Number(indexScroll <= 0 ? 0 : indexScroll)]
                           ?.timestamp}
                     </Text>
@@ -93,17 +85,12 @@ const DataChart = ({ data, indexScroll }: any) => {
           return (
             <View
               style={{
-                width: Dimensions.get("window").width / 6,
-                height: (Dimensions.get("window").height * 0.53) / 4,
+                ...styles.containerListBottom,
                 borderLeftWidth: [5, 11, 17, 23].includes(index) ? 0 : 0.4,
-                borderBottomWidth: 0.4,
-                borderTopWidth: 0.4,
-                borderColor: "lightgrey",
-                justifyContent: "flex-end",
               }}
             >
               {[5].includes(index) && (
-                <Text style={{ fontSize: 10 }}>
+                <Text style={styles.textData}>
                   {groupData(data)
                     .map(
                       (res) =>
@@ -113,7 +100,7 @@ const DataChart = ({ data, indexScroll }: any) => {
                 </Text>
               )}
               {[11].includes(index) && (
-                <Text style={{ fontSize: 10 }}>
+                <Text style={styles.textData}>
                   {groupData(data)
                     .map(
                       (res) =>
@@ -123,7 +110,7 @@ const DataChart = ({ data, indexScroll }: any) => {
                 </Text>
               )}
               {[17].includes(index) && (
-                <Text style={{ fontSize: 10 }}>
+                <Text style={styles.textData}>
                   {groupData(data)
                     .map(
                       (res) =>
@@ -133,7 +120,7 @@ const DataChart = ({ data, indexScroll }: any) => {
                 </Text>
               )}
               {[23].includes(index) && (
-                <Text style={{ fontSize: 10 }}>
+                <Text style={styles.textData}>
                   {groupData(data)
                     .map(
                       (res) => res.data[indexScroll <= 0 ? 0 : indexScroll]?.low
@@ -151,14 +138,15 @@ const DataChart = ({ data, indexScroll }: any) => {
 
 const Chart = ({
   onScrollChart,
+  data
 }: {
   onScrollChart: (val: boolean) => void;
+  data: THistoryDataTrading
 }) => {
-  const { dataChart } = useTrading();
 
-  const [showData, setDataShow] = useState(true);
-  const [indexScroll, setIndexScroll] = useState("0");
-  const [scrollX, setScrollX] = useState(0);
+  const [showData, setDataShow] = useState<boolean>(true);
+  const [indexScroll, setIndexScroll] = useState<string>("0");
+  const [scrollX, setScrollX] = useState<number>(0);
   const ref: any = useRef();
 
   useEffect(() => {
@@ -188,29 +176,25 @@ const Chart = ({
   };
 
   return (
-    <CandlestickChart.Provider data={dataChart}>
-      <DataChart data={dataChart} indexScroll={indexScroll} />
+    <CandlestickChart.Provider data={data}>
+      <DataChart data={data} indexScroll={indexScroll} />
       <View
-        style={{
-          width: Dimensions.get("window").width * 0.83,
-          marginTop: Dimensions.get("window").height * 0.19,
-        }}
+        style={styles.containerChart}
       >
         <ScrollView
           showsHorizontalScrollIndicator={false}
           ref={ref}
           horizontal
           bounces={false}
-          contentContainerStyle={{ justifyContent: "flex-end" }}
           scrollEnabled={showData}
           onScroll={handlescroll}
           scrollEventThrottle={16}
         >
           <GestureHandlerRootView
-            style={{ width: (Dimensions.get("window").width / 5.5) * 10 }}
+            style={styles.containerChartInner}
           >
             <CandlestickChart
-              height={Dimensions.get("window").height * 0.5}
+              height={Dimensions.get("window").height * 0.4}
               width={Number((Dimensions.get("window").width / 5.5) * 10)}
             >
               <CandlestickChart.Candles />
@@ -220,12 +204,7 @@ const Chart = ({
                 onEnded={() => handleData(true)}
               >
                 <CandlestickChart.PriceText
-                  style={{
-                    fontSize: 11,
-                    padding: 0,
-                    margin: 0,
-                    textAlign: "center",
-                  }}
+                  style={styles.textPrice}
                   precision={10}
                   format={format}
                 />
@@ -239,3 +218,34 @@ const Chart = ({
 };
 
 export default memo(Chart);
+
+
+const styles = StyleSheet.create({
+  containerChartData: { position: "absolute", top: -40, left: 0 },
+  containerListFirst: {
+    zIndex: -99,
+  },
+  containerItemFirst: {
+    width: Dimensions.get("window").width / 6,
+    height: 200,
+  },
+  containerListBottom: {
+    width: Dimensions.get("window").width / 6,
+    height: (Dimensions.get("window").height * 0.45) / 4,
+    borderBottomWidth: 0.4,
+    borderTopWidth: 0.4,
+    borderColor: "lightgrey",
+    justifyContent: "flex-end",
+  },
+  textData: { fontSize: 10 },
+  containerChart: {
+    width: Dimensions.get("window").width * 0.83,
+  },
+  containerChartInner: { width: (Dimensions.get("window").width / 5.5) * 10 },
+  textPrice: {
+    fontSize: 11,
+    padding: 0,
+    margin: 0,
+    textAlign: "center",
+  }
+})
