@@ -2,12 +2,16 @@ import { memo } from "react";
 import { Dimensions, Image, Text, View } from "react-native";
 import { StyleSheet } from "react-native";
 
-const Header = () => {
+type Props = {
+    dataPriceRate: string
+}
+
+const Header = ({ dataPriceRate }: Props) => {
     return (
         <View style={styles.containerHeader}>
             <View>
                 <Text style={styles.text}>Etherium/Bitcoin</Text>
-                <Text style={styles.boldText}>0,061BTC</Text>
+                <Text style={styles.boldText}>{dataPriceRate}BTC</Text>
             </View>
             <Image
                 source={{

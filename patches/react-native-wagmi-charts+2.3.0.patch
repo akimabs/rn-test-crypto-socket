@@ -20,7 +20,7 @@ diff --git a/node_modules/react-native-wagmi-charts/src/charts/.DS_Store b/node_
 new file mode 100644
 index 0000000..e69de29
 diff --git a/node_modules/react-native-wagmi-charts/src/charts/candle/Crosshair.tsx b/node_modules/react-native-wagmi-charts/src/charts/candle/Crosshair.tsx
-index ca1fa14..8854c17 100644
+index ca1fa14..ece1cf7 100644
 --- a/node_modules/react-native-wagmi-charts/src/charts/candle/Crosshair.tsx
 +++ b/node_modules/react-native-wagmi-charts/src/charts/candle/Crosshair.tsx
 @@ -1,5 +1,5 @@
@@ -130,7 +130,7 @@ index ca1fa14..8854c17 100644
    return (
      <LongPressGestureHandler
 -      minDurationMs={0}
-+      minDurationMs={500}
++      minDurationMs={300}
        maxDist={999999}
        onGestureEvent={onGestureEvent}
        {...props}

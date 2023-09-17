@@ -7,7 +7,7 @@ import OrderBook from "./components/order-book";
 import { useTrading } from "./logic/useTrading";
 
 export default function Trading() {
-  const { dataChart, dataOrder, matchTrade } = useTrading();
+  const { dataPriceRate, dataChart, dataOrder, matchTrade } = useTrading();
   const [enableScroll, setEnableScroll] = useState<boolean>(true);
 
   const handleData = useCallback((data: boolean) => {
@@ -20,7 +20,7 @@ export default function Trading() {
         showsVerticalScrollIndicator={false}
         scrollEnabled={enableScroll}
       >
-        <Header />
+        <Header dataPriceRate={dataPriceRate} />
         <View style={styles.containerChart}>
           <Chart data={dataChart} onScrollChart={(val) => handleData(val)} />
         </View>

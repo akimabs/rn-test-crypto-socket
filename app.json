@@ -18,10 +18,12 @@
       "supportsTablet": true
     },
     "android": {
+      "permissions": [ "INTERNET" ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.akimabst.testpintu"
     },
     "web": {
       "favicon": "./assets/favicon.png"
