@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "axios": "^1.5.0",
@@ -22,8 +23,7 @@
     "react-native-reanimated": "~3.3.0",
     "react-native-svg": "13.9.0",
     "react-native-wagmi-charts": "^2.3.0",
-    "react-query": "^3.39.3",
-    "socket.io-client": "^4.7.2"
+    "react-query": "^3.39.3"
   },
   "devDependencies": {
     "@babel/core": "^7.14.0",
