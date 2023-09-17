@@ -1,5 +1,5 @@
-import { memo, useEffect, useState } from "react"
-import { Dimensions, FlatList, Text, View } from "react-native"
+import { memo, useCallback, useEffect, useState } from "react"
+import { Dimensions, FlatList, StyleSheet, Text, View } from "react-native"
 import { THistoryDataOrder, THistoryDataTrade } from "../../logic/useTrading"
 
 
@@ -53,27 +53,43 @@ const OrderBook = ({ data, matchesTrade }: Props) => {
         }).slice(0, 13))
     }, [])
 
-    return (
-        <View style={{ marginBottom: 80 }}>
-            <View style={{ width: Dimensions.get('window').width, backgroundColor: 'whitesmoke' }} >
-                <Text style={{ fontSize: 20, fontWeight: 'bold', padding: 10 }}>Order Book</Text>
+    const renderBuyList = useCallback(() => {
+        return (
+            <View>
+                <View style={styles.containerHeaderBuy}>
+                    <Text style={styles.textHeaderBuy}>Ask</Text>
+                </View>
+                <View style={styles.textBuy}>
+                    <Text style={styles.buyListText}>Amount</Text>
+                    <Text style={styles.buyListText}>Price(BTC)</Text>
+                </View>
             </View>
-            <View style={{ flexDirection: 'row', width: Dimensions.get('window').width * 0.9 }}>
+        )
+    }, [])
+
+    const renderSellList = useCallback(() => {
+        return (
+            <View>
+                <View style={styles.containerHeaderSell}>
+                    <Text style={styles.textHeaderBuy}>Bid</Text>
+                </View>
+                <View style={styles.textBuy}>
+                    <Text style={styles.buyListText}>Price(BTC)</Text>
+                    <Text style={styles.buyListText}>Amount</Text>
+                </View>
+            </View>
+        )
+    }, [])
+
+    return (
+        <View style={styles.containerFooter}>
+            <View style={styles.containerHeaderFooter} >
+                <Text style={styles.textHeaderFooter}>Order Book</Text>
+            </View>
+            <View style={styles.containerBuyList}>
                 <View>
                     <FlatList
-                        ListHeaderComponent={() => {
-                            return (
-                                <View>
-                                    <View style={{ width: Dimensions.get('window').width / 2, backgroundColor: '#10b98120' }}>
-                                        <Text style={{ paddingHorizontal: 10 }}>Ask</Text>
-                                    </View>
-                                    <View style={{ width: Dimensions.get('window').width / 2, backgroundColor: 'whitesmoke', height: 30, justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>
-                                        <Text style={{ fontSize: 12, color: 'grey' }}>Amount</Text>
-                                        <Text style={{ fontSize: 12, color: 'grey' }}>Price(BTC)</Text>
-                                    </View>
-                                </View>
-                            )
-                        }}
+                        ListHeaderComponent={renderBuyList}
                         contentContainerStyle={{ width: Dimensions.get('window').width / 2 }}
                         data={tmpDataBid}
                         renderItem={({ item }) => {
@@ -82,10 +98,10 @@ const OrderBook = ({ data, matchesTrade }: Props) => {
                             const calculatePrecent = dataPercent >= 100 ? 100 : dataPercent <= 0 ? 0 : dataPercent
                             return (
                                 <View>
-                                    <View style={{ backgroundColor: '#10b98120', width: totalPrecentTrade * calculatePrecent, height: 30, position: 'absolute', right: 0 }} />
-                                    <View style={{ flexDirection: 'row', paddingHorizontal: 10, height: 30, alignItems: 'center', marginBottom: 1, justifyContent: 'space-between', }}>
-                                        <Text style={{ fontSize: 13 }}>{item[1]}</Text>
-                                        <Text style={{ fontSize: 13, color: '#10b981' }}>{item[0]}</Text>
+                                    <View style={[{ width: totalPrecentTrade * calculatePrecent }, styles.containerListBuy]} />
+                                    <View style={styles.containerTextListBuy}>
+                                        <Text style={styles.textBuy1}>{item[1]}</Text>
+                                        <Text style={styles.textBuy2}>{item[0]}</Text>
                                     </View>
                                 </View>
                             )
@@ -94,19 +110,7 @@ const OrderBook = ({ data, matchesTrade }: Props) => {
                 </View>
                 <View>
                     <FlatList
-                        ListHeaderComponent={() => {
-                            return (
-                                <View>
-                                    <View style={{ width: Dimensions.get('window').width / 2, backgroundColor: '#ef444420' }}>
-                                        <Text style={{ paddingHorizontal: 10 }}>Bid</Text>
-                                    </View>
-                                    <View style={{ width: Dimensions.get('window').width / 2, backgroundColor: 'whitesmoke', height: 30, justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10 }}>
-                                        <Text style={{ fontSize: 12, color: 'grey' }}>Price(BTC)</Text>
-                                        <Text style={{ fontSize: 12, color: 'grey' }}>Amount</Text>
-                                    </View>
-                                </View>
-                            )
-                        }}
+                        ListHeaderComponent={renderSellList}
                         contentContainerStyle={{ width: Dimensions.get('window').width / 2 }}
                         data={tmpDataAsk}
                         renderItem={({ item }) => {
@@ -115,10 +119,10 @@ const OrderBook = ({ data, matchesTrade }: Props) => {
                             const calculatePrecent = dataPercent >= 100 ? 100 : dataPercent <= 0 ? 0 : dataPercent
                             return (
                                 <View>
-                                    <View style={{ backgroundColor: '#ef444420', width: totalPrecentTrade * calculatePrecent, height: 30, position: 'absolute', left: 0 }} />
-                                    <View style={{ flexDirection: 'row', paddingHorizontal: 10, height: 30, alignItems: 'center', marginBottom: 1, justifyContent: 'space-between' }}>
-                                        <Text style={{ fontSize: 13, color: '#ef4444' }}>{item[0]}</Text>
-                                        <Text style={{ fontSize: 13 }}>{item[1]}</Text>
+                                    <View style={[{ width: totalPrecentTrade * calculatePrecent }, styles.containerListSell]} />
+                                    <View style={styles.containerTextListBuy}>
+                                        <Text style={styles.textSell1}>{item[0]}</Text>
+                                        <Text style={styles.textSell2}>{item[1]}</Text>
                                     </View>
                                 </View>
                             )
@@ -131,3 +135,22 @@ const OrderBook = ({ data, matchesTrade }: Props) => {
 }
 
 export default memo(OrderBook)
+
+const styles = StyleSheet.create({
+    containerFooter: { marginBottom: 80 },
+    containerHeaderFooter: { width: Dimensions.get('window').width, backgroundColor: 'white' },
+    textHeaderFooter: { fontSize: 20, fontWeight: 'bold', padding: 10 },
+    containerBuyList: { flexDirection: 'row', width: Dimensions.get('window').width * 0.9 },
+    containerHeaderBuy: { width: Dimensions.get('window').width / 2, backgroundColor: '#10b98120' },
+    containerHeaderSell: { width: Dimensions.get('window').width / 2, backgroundColor: '#ef444420' },
+    textHeaderBuy: { paddingHorizontal: 10 },
+    textBuy: { width: Dimensions.get('window').width / 2, backgroundColor: 'white', height: 30, justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 10, borderBottomWidth: 1, borderBottomColor: 'lightgrey' },
+    containerListBuy: { backgroundColor: '#10b98120', height: 30, position: 'absolute', right: 0 },
+    containerListSell: { backgroundColor: '#ef444420', height: 30, position: 'absolute', left: 0 },
+    containerTextListBuy: { flexDirection: 'row', paddingHorizontal: 10, height: 30, alignItems: 'center', marginBottom: 1, justifyContent: 'space-between' },
+    textBuy1: { fontSize: 13 },
+    textBuy2: { fontSize: 13, color: '#10b981' },
+    textSell2: { fontSize: 13 },
+    textSell1: { fontSize: 13, color: '#ef4444' },
+    buyListText: { fontSize: 12, color: 'grey' }
+})

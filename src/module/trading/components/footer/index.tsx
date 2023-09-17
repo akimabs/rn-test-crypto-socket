@@ -1,19 +1,21 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { Dimensions, Text, TouchableOpacity, View } from "react-native";
 import { StyleSheet } from "react-native";
 
 const Footer = () => {
+    const styledMemoBuy = useMemo(() => [styles.buttonContainer, styles.buyButton], [])
+    const styledMemoSell = useMemo(() => [styles.buttonContainer, styles.sellButton], [])
     return (
         <View style={styles.container}>
             <TouchableOpacity
                 activeOpacity={0.9}
-                style={[styles.buttonContainer, styles.buyButton]}
+                style={styledMemoBuy}
             >
                 <Text style={styles.buttonText}>Buy</Text>
             </TouchableOpacity>
             <TouchableOpacity
                 activeOpacity={0.9}
-                style={[styles.buttonContainer, styles.sellButton]}
+                style={styledMemoSell}
             >
                 <Text style={styles.buttonText}>Sell</Text>
             </TouchableOpacity>

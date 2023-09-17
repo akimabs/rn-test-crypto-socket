@@ -32,5 +32,5 @@ export default function Trading() {
 }
 
 const styles = StyleSheet.create({
-  containerChart: { marginBottom: 30 }
+  containerChart: { marginBottom: 30, backgroundColor: 'white' }
 })
