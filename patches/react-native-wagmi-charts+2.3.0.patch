@@ -1,0 +1,171 @@
+diff --git a/node_modules/react-native-wagmi-charts/.DS_Store b/node_modules/react-native-wagmi-charts/.DS_Store
+new file mode 100644
+index 0000000..9a874b5
+Binary files /dev/null and b/node_modules/react-native-wagmi-charts/.DS_Store differ
+diff --git a/node_modules/react-native-wagmi-charts/lib/typescript/src/charts/candle/Crosshair.d.ts b/node_modules/react-native-wagmi-charts/lib/typescript/src/charts/candle/Crosshair.d.ts
+index 285826e..7d3a68e 100644
+--- a/node_modules/react-native-wagmi-charts/lib/typescript/src/charts/candle/Crosshair.d.ts
++++ b/node_modules/react-native-wagmi-charts/lib/typescript/src/charts/candle/Crosshair.d.ts
+@@ -10,6 +10,7 @@ declare type CandlestickChartCrosshairProps = LongPressGestureHandlerProps & {
+     horizontalCrosshairProps?: Animated.AnimateProps<ViewProps>;
+     verticalCrosshairProps?: Animated.AnimateProps<ViewProps>;
+     lineProps?: Partial<CandlestickChartLineProps>;
++    scrollX: number
+ };
+ export declare function CandlestickChartCrosshair({ color, onCurrentXChange, children, horizontalCrosshairProps, verticalCrosshairProps, lineProps, ...props }: CandlestickChartCrosshairProps): JSX.Element;
+ export {};
+diff --git a/node_modules/react-native-wagmi-charts/src/.DS_Store b/node_modules/react-native-wagmi-charts/src/.DS_Store
+new file mode 100644
+index 0000000..7827564
+Binary files /dev/null and b/node_modules/react-native-wagmi-charts/src/.DS_Store differ
+diff --git a/node_modules/react-native-wagmi-charts/src/charts/.DS_Store b/node_modules/react-native-wagmi-charts/src/charts/.DS_Store
+new file mode 100644
+index 0000000..0ef4fd0
+Binary files /dev/null and b/node_modules/react-native-wagmi-charts/src/charts/.DS_Store differ
+diff --git a/node_modules/react-native-wagmi-charts/src/charts/candle/Crosshair.tsx b/node_modules/react-native-wagmi-charts/src/charts/candle/Crosshair.tsx
+index ca1fa14..dba9a94 100644
+--- a/node_modules/react-native-wagmi-charts/src/charts/candle/Crosshair.tsx
++++ b/node_modules/react-native-wagmi-charts/src/charts/candle/Crosshair.tsx
+@@ -1,5 +1,5 @@
+ import * as React from 'react';
+-import { StyleSheet, ViewProps } from 'react-native';
++import { Dimensions, StyleSheet, Text, View, ViewProps } from 'react-native';
+ import {
+   GestureEvent,
+   LongPressGestureHandler,
+@@ -19,6 +19,8 @@ import { CandlestickChartDimensionsContext } from './Chart';
+ import { CandlestickChartLine, CandlestickChartLineProps } from './Line';
+ import { useCandlestickChart } from './useCandlestickChart';
+ import { CandlestickChartCrosshairTooltipContext } from './CrosshairTooltip';
++import {CandlestickChartDatetimeText} from './DatetimeText'
++import {CandlestickChartPriceText} from './PriceText'
+ 
+ type CandlestickChartCrosshairProps = LongPressGestureHandlerProps & {
+   color?: string;
+@@ -27,6 +29,7 @@ type CandlestickChartCrosshairProps = LongPressGestureHandlerProps & {
+   horizontalCrosshairProps?: Animated.AnimateProps<ViewProps>;
+   verticalCrosshairProps?: Animated.AnimateProps<ViewProps>;
+   lineProps?: Partial<CandlestickChartLineProps>;
++  scrollX: number
+ };
+ 
+ export function CandlestickChartCrosshair({
+@@ -36,6 +39,7 @@ export function CandlestickChartCrosshair({
+   horizontalCrosshairProps = {},
+   verticalCrosshairProps = {},
+   lineProps = {},
++  scrollX,
+   ...props
+ }: CandlestickChartCrosshairProps) {
+   const { width, height } = React.useContext(CandlestickChartDimensionsContext);
+@@ -68,6 +72,7 @@ export function CandlestickChartCrosshair({
+     () => ({
+       opacity: opacity.value,
+       transform: [{ translateY: currentY.value }],
++      zIndex: 100,
+     }),
+     [opacity, currentY]
+   );
+@@ -79,6 +84,47 @@ export function CandlestickChartCrosshair({
+     [opacity, currentX]
+   );
+ 
++const widthChart =  Dimensions.get("window").width *0.677
++const widthChartBox =  Dimensions.get("window").width *0.5
++
++  const dataChartStyle = useAnimatedStyle(()=>({
++    position: 'absolute',
++    opacity: opacity.value,
++    top: 10,
++    width: 100,
++    height: 100,
++    borderRadius: 10,
++    borderColor: 'lightblue',
++    borderWidth: 0.9,
++    backgroundColor: 'white',
++    zIndex: 99,
++    paddingLeft: 5,
++    transform: [{
++      translateX: currentX.value >= scrollX + 150 ? scrollX + 10 : scrollX + widthChartBox,
++    }]
++  }), [opacity, currentX, scrollX])
++
++
++  const center = useAnimatedStyle(() => ({
++    opacity: opacity.value,
++    width: 60,
++    height: 30,
++    backgroundColor: 'white',
++    borderWidth: 1,
++    borderRadius: 30,
++    marginTop: -15,
++    zIndex: 100,
++    transform: [
++            {
++              translateX: currentX.value >= scrollX + 200 ? scrollX : scrollX + widthChart,
++            },
++            {
++              translateY: currentY.value,
++            },
++          ]}), 
++    [opacity, currentX, scrollX]
++    )
++
+   useAnimatedReaction(
+     () => currentX.value,
+     (data, prevData) => {
+@@ -89,9 +135,29 @@ export function CandlestickChartCrosshair({
+     [currentX]
+   );
+ 
++  const formatHigh = ({ value }) => {
++    "worklet";
++    return `High: ${value}`;
++  };
++
++  const formatOpen = ({ value }) => {
++    "worklet";
++    return `Open: ${value}`;
++  };
++
++  const formatClose = ({ value }) => {
++    "worklet";
++    return `Low: ${value}`;
++  };
++
++  const formatLow = ({ value }) => {
++    "worklet";
++    return `Close: ${value}`;
++  };
++
+   return (
+     <LongPressGestureHandler
+-      minDurationMs={0}
++      minDurationMs={500}
+       maxDist={999999}
+       onGestureEvent={onGestureEvent}
+       {...props}
+@@ -105,9 +171,22 @@ export function CandlestickChartCrosshair({
+           <CandlestickChartCrosshairTooltipContext.Provider
+             value={{ position: tooltipPosition }}
+           >
+-            {children}
+           </CandlestickChartCrosshairTooltipContext.Provider>
+         </Animated.View>
++        <Animated.View style={dataChartStyle}>
++        <CandlestickChartDatetimeText style={{fontSize: 10, marginBottom: -10}} />
++        <View style={{ marginRight: 10 }} />
++        <CandlestickChartPriceText type="high" precision={10} style={{fontSize: 10, marginBottom: -10}} format={formatHigh} />
++        <View style={{ marginRight: 10 }} />
++        <CandlestickChartPriceText type="open" precision={10} style={{fontSize: 10, marginBottom: -10}} format={formatOpen}/>
++        <View style={{ marginRight: 10 }} />
++        <CandlestickChartPriceText type="close" precision={10} style={{fontSize: 10, marginBottom: -10}} format={formatLow}/>
++        <View style={{ marginRight: 10 }} />
++        <CandlestickChartPriceText type="low" precision={10} style={{fontSize: 10}} format={formatClose}/>
++      </Animated.View>
++        <Animated.View style={center}>
++          {children}
++        </Animated.View>
+         <Animated.View
+           style={[StyleSheet.absoluteFill, vertical]}
+           {...verticalCrosshairProps}
