@@ -4,7 +4,7 @@ Based on the reviews on the Play Store for the Pintu app.
 
 <img src="https://user-images.githubusercontent.com/46390089/268562216-6ae36cc3-cf69-407a-be84-6ce9556e60a4.jpg" width="300">
 
-I have been inspired to create a scrollable UI chart that allows users to view historical prices. Additionally, I am considering combining indicators with the built-in SVG line chart to integrate them into the react-native-wagmi-charts package through patch-package.
+I have been inspired to create a scrollable UI chart that allows users to view historical prices. Additionally, I am considering for the future combining indicators with the built-in SVG line chart to integrate them into the react-native-wagmi-charts package through patch-package.
 
 And i have encountered a rather challenging issue with the react-native-wagmi-charts package. Its components have not been optimized, such as using memoization for primitive data types like arrays.
 
