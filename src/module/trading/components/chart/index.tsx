@@ -43,7 +43,7 @@ function groupData(inputData: THistoryDataTrading) {
   return result;
 }
 
-const DataChart = ({ data, indexScroll }: any) => {
+const DataChart = memo(({ data, indexScroll }: any) => {
   return (
     <View style={styles.containerChartData}>
       <FlatList
@@ -61,9 +61,7 @@ const DataChart = ({ data, indexScroll }: any) => {
               data={groupData(data)}
               renderItem={({ item, index }) => {
                 return (
-                  <View
-                    style={styles.containerItemFirst}
-                  >
+                  <View style={styles.containerItemFirst}>
                     <Text
                       style={[
                         index >= 1 && { marginLeft: -20 },
@@ -134,16 +132,15 @@ const DataChart = ({ data, indexScroll }: any) => {
       />
     </View>
   );
-};
+});
 
 const Chart = ({
   onScrollChart,
-  data
+  data,
 }: {
   onScrollChart: (val: boolean) => void;
-  data: THistoryDataTrading
+  data: THistoryDataTrading;
 }) => {
-
   const [showData, setDataShow] = useState<boolean>(true);
   const [indexScroll, setIndexScroll] = useState<string>("0");
   const [scrollX, setScrollX] = useState<number>(0);
@@ -178,9 +175,7 @@ const Chart = ({
   return (
     <CandlestickChart.Provider data={data}>
       <DataChart data={data} indexScroll={indexScroll} />
-      <View
-        style={styles.containerChart}
-      >
+      <View style={styles.containerChart}>
         <ScrollView
           showsHorizontalScrollIndicator={false}
           ref={ref}
@@ -190,9 +185,7 @@ const Chart = ({
           onScroll={handlescroll}
           scrollEventThrottle={16}
         >
-          <GestureHandlerRootView
-            style={styles.containerChartInner}
-          >
+          <GestureHandlerRootView style={styles.containerChartInner}>
             <CandlestickChart
               height={Dimensions.get("window").height * 0.4}
               width={Number((Dimensions.get("window").width / 5.5) * 10)}
@@ -218,7 +211,6 @@ const Chart = ({
 };
 
 export default memo(Chart);
-
 
 const styles = StyleSheet.create({
   containerChartData: { position: "absolute", top: -40, left: 0 },
@@ -247,5 +239,5 @@ const styles = StyleSheet.create({
     padding: 0,
     margin: 0,
     textAlign: "center",
-  }
-})
+  },
+});

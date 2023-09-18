@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
 import Chart from "./components/chart";
 import Footer from "./components/footer";
 import Header from "./components/header";
@@ -10,15 +10,19 @@ export default function Trading() {
   const { dataPriceRate, dataChart, dataOrder, matchTrade } = useTrading();
   const [enableScroll, setEnableScroll] = useState<boolean>(true);
 
-  const handleData = useCallback((data: boolean) => {
-    setEnableScroll(data);
-  }, []);
+  const handleData = useCallback(
+    (data: boolean) => {
+      setEnableScroll(data);
+    },
+    [setEnableScroll]
+  );
 
   return (
     <View>
       <ScrollView
         showsVerticalScrollIndicator={false}
         scrollEnabled={enableScroll}
+        nestedScrollEnabled
       >
         <Header dataPriceRate={dataPriceRate} />
         <View style={styles.containerChart}>
@@ -32,5 +36,5 @@ export default function Trading() {
 }
 
 const styles = StyleSheet.create({
-  containerChart: { marginBottom: 30, backgroundColor: 'white' }
-})
+  containerChart: { marginBottom: 30, backgroundColor: "white" },
+});
